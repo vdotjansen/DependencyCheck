@@ -172,6 +172,7 @@ Copyright (c) 2012 - Jeremy Long
         <org.apache.velocity.version>2.1</org.apache.velocity.version>
         <plexus-sec-dispatcher.version>1.4</plexus-sec-dispatcher.version>
         <maven-dependency-tree.version>3.0.1</maven-dependency-tree.version>
+        <mockserver.version>5.6.1</mockserver.version>
 
         <!-- upgrading beyond 1.0.4 will cause the build to fail on Java 7 --> 
         <org.glassfish.javax.json.version>1.0.4</org.glassfish.javax.json.version>
@@ -1113,6 +1114,11 @@ Copyright (c) 2012 - Jeremy Long
                         <artifactId>httpcore</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.mock-server</groupId>
+                <artifactId>mockserver-netty</artifactId>
+                <version>${mockserver.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
