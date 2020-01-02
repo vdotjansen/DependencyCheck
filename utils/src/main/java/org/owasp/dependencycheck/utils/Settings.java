@@ -36,6 +36,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.ProtectionDomain;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -281,7 +282,12 @@ public final class Settings {
          */
         public static final String ANALYZER_NODE_AUDIT_URL = "analyzer.node.audit.url";
         /**
-         * The properties key for whether Central search results will be cached.
+         * The properties key for configure whether the Node Audit analyzer should skip devDependencies.
+         */
+        public static final String ANALYZER_NODE_AUDIT_SKIPDEV = "analyzer.node.audit.skipdev";
+        /**
+         * The properties key for whether node audit analyzer results will be
+         * cached.
          */
         public static final String ANALYZER_NODE_AUDIT_USE_CACHE = "analyzer.node.audit.use.cache";
         /**
@@ -302,6 +308,11 @@ public final class Settings {
          * The properties key for defining the URL to the RetireJS repository.
          */
         public static final String ANALYZER_RETIREJS_REPO_JS_URL = "analyzer.retirejs.repo.js.url";
+        /**
+         * The properties key for defining whether the RetireJS repository will
+         * be updated regardless of the autoupdate settings.
+         */
+        public static final String ANALYZER_RETIREJS_FORCEUPDATE = "analyzer.retirejs.forceupdate";
         /**
          * The properties key to control the skipping of the check for CVE
          * updates.
@@ -427,6 +438,10 @@ public final class Settings {
          * The properties key for whether the Central analyzer is enabled.
          */
         public static final String ANALYZER_CENTRAL_ENABLED = "analyzer.central.enabled";
+        /**
+         * Key for the URL to obtain content from Maven Central.
+         */
+        public static final String CENTRAL_CONTENT_URL = "central.content.url";
         /**
          * The properties key for whether the Central analyzer should use
          * parallel processing.
@@ -689,7 +704,11 @@ public final class Settings {
      * @return the list of keys to mask
      */
     private List<Predicate<String>> getMaskedKeys() {
-        return Arrays.asList(getArray(Settings.KEYS.MASKED_PROPERTIES))
+        String[] masked = getArray(Settings.KEYS.MASKED_PROPERTIES);
+        if (masked == null) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(masked)
                 .stream()
                 .map(v -> Pattern.compile(v).asPredicate())
                 .collect(Collectors.toList());
@@ -767,7 +786,7 @@ public final class Settings {
      */
     public void setString(@NotNull final String key, @NotNull final String value) {
         props.setProperty(key, value);
-        LOGGER.debug("Setting: {}='{}'", key, value);
+        LOGGER.debug("Setting: {}='{}'", key, getPrintableValue(key, value));
     }
 
     /**
@@ -1110,7 +1129,7 @@ public final class Settings {
             value = Integer.parseInt(getString(key));
         } catch (NumberFormatException ex) {
             if (!getString(key, "").isEmpty()) {
-                LOGGER.debug("Could not convert property '{}={}' to an int; using {} instead.", key, getString(key), defaultValue);
+                LOGGER.debug("Could not convert property '{}={}' to an int; using {} instead.", key, getPrintableValue(key, getString(key)), defaultValue);
             }
             value = defaultValue;
         }

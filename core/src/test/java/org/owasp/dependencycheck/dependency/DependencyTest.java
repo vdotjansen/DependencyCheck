@@ -263,7 +263,7 @@ public class DependencyTest extends BaseTest {
         Dependency instance = new Dependency();
         MavenArtifact mavenArtifact = new MavenArtifact(null, null, null, null);
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
-        assertFalse(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e->e.getConfidence()==Confidence.HIGH));
+        assertFalse(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
         assertTrue(instance.size() == 0);
         assertTrue(instance.getSoftwareIdentifiers().isEmpty());
     }
@@ -276,7 +276,7 @@ public class DependencyTest extends BaseTest {
         Dependency instance = new Dependency();
         MavenArtifact mavenArtifact = new MavenArtifact("group", "artifact", "version", null);
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
-        assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e->e.getConfidence()==Confidence.HIGH));
+        assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
         assertTrue(instance.size() == 3);
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 
@@ -286,7 +286,7 @@ public class DependencyTest extends BaseTest {
 
         mavenArtifact = new MavenArtifact("group", "artifact", "version", "url");
         instance.addAsEvidence("pom", mavenArtifact, Confidence.HIGH);
-        assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e->e.getConfidence()==Confidence.HIGH));
+        assertTrue(instance.getEvidence(EvidenceType.VENDOR).stream().anyMatch(e -> e.getConfidence() == Confidence.HIGH));
         assertTrue(instance.size() == 3);
         assertFalse(instance.getSoftwareIdentifiers().isEmpty());
 

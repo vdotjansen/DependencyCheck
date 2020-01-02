@@ -25,7 +25,7 @@ failBuildOnAnyVulnerability | Specific that if any vulnerability is identified, 
 failOnError                 | Whether the build should fail if there is an error executing the dependency-check analysis. | true
 name                        | The name of the report in the site. | dependency-check or dependency-check:aggregate
 outputDirectory             | The location to write the report(s). Note, this is not used if generating the report as part of a `mvn site` build. | 'target'
-scanSet                     | An optional collection of filesets that specify additional files and/or directories to analyze as part of the scan. If not specified, defaults to standard Maven conventions. To specify this via the command line for maven use `-DscanSet.fileSet=['src/main']`. | ['src/main/resources', 'src/main/filters', 'src/main/webapp']
+scanSet                     | An optional collection of filesets that specify additional files and/or directories to analyze as part of the scan. If not specified, defaults to standard Maven conventions. To specify this via the command line for maven use `-DscanSet.fileSet=['src/main']`. Note that the scan sets specified should be relative from the base directory - do not use Maven project variable substitution (e.g. `${project.basedir}/src/webpack`). Using Maven project variable substitution can cause directories to be missed especially when using an aggregate build. | ['src/main/resources', 'src/main/filters', 'src/main/webapp', './package.json', './package-lock.json', './npm-shrinkwrap.json', './Gopkg.lock', './go.mod']
 skip                        | Skips the dependency-check analysis.                       | false
 skipProvidedScope           | Skip analysis for artifacts with Provided Scope.           | false
 skipRuntimeScope            | Skip analysis for artifacts with Runtime Scope.            | false
@@ -54,7 +54,7 @@ zipExtensions                 | A comma-separated list of additional file extens
 jarAnalyzerEnabled            | Sets whether Jar Analyzer will be used.                                   | true
 centralAnalyzerEnabled        | Sets whether Central Analyzer will be used; by default in the Maven plugin this analyzer is disabled as all information gained from Central is already available in the build. | false
 centralAnalyzerUseCache       | Sets whether the Central Analyer will cache results. Cached results expire after 30 days.                  | true
-ossindexAnalyzerEnabled       | Sets whether the OSS Index Analyzer will be enabled.                      | true
+ossindexAnalyzerEnabled       | Sets whether the [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be enabled. This analyzer requires an internet connection. | true
 ossindexAnalyzerUseCache      | Sets whether the OSS Index Analyzer will cache results. Cached results expire after 24 hours.              | true
 ossindexServerId              | The id of a server defined in the settings.xml to retrieve the credentials (username and password) to connect to OSS Index instance; not it is not required to have a registered account and use this configuration. | &nbsp;
 nexusAnalyzerEnabled          | Sets whether Nexus Analyzer will be used (requires Nexus Pro). This analyzer is superceded by the Central Analyzer; however, you can configure this to run against a Nexus Pro installation. | true
@@ -68,7 +68,7 @@ artifactoryAnalyzerParallelAnalysis | Whether the Artifactory analyzer should be
 artifactoryAnalyzerServerId   | The id of a server defined in the settings.xml to retrieve the credentials (username and API token) to connect to Artifactory instance. It is used in priority to artifactoryAnalyzerUsername and artifactoryAnalyzerApiToken | artifactory
 artifactoryAnalyzerUsername   | The user name (only used with API token) to connect to Artifactory instance | &nbsp;
 artifactoryAnalyzerApiToken   | The API token to connect to Artifactory instance, only used if the username or the API key are not defined by artifactoryAnalyzerServerId,artifactoryAnalyzerUsername or artifactoryAnalyzerApiToken | &nbsp;
-artifactoryAnalyzerBearerToken   | The bearer token to connect to Artifactory instance                                                     | &nbsp;
+artifactoryAnalyzerBearerToken| The bearer token to connect to Artifactory instance                                                        | &nbsp;
 pyDistributionAnalyzerEnabled | Sets whether the [experimental](../analyzers/index.html) Python Distribution Analyzer will be used.        | true
 pyPackageAnalyzerEnabled      | Sets whether the [experimental](../analyzers/index.html) Python Package Analyzer will be used.             | true
 rubygemsAnalyzerEnabled       | Sets whether the [experimental](../analyzers/index.html) Ruby Gemspec Analyzer will be used.               | true
@@ -77,9 +77,11 @@ cmakeAnalyzerEnabled          | Sets whether the [experimental](../analyzers/ind
 autoconfAnalyzerEnabled       | Sets whether the [experimental](../analyzers/index.html) autoconf Analyzer should be used.                 | true
 composerAnalyzerEnabled       | Sets whether the [experimental](../analyzers/index.html) PHP Composer Lock File Analyzer should be used.   | true
 nodeAnalyzerEnabled           | Sets whether the [retired](../analyzers/index.html) Node.js Analyzer should be used.                       | true
-nodeAuditAnalyzerEnabled      | Sets whether the Node Audit Analyzer should be used.                                                       | true
+nodeAuditAnalyzerEnabled      | Sets whether the Node Audit Analyzer should be used. This analyzer requires an internet connection.        | true
 nodeAuditAnalyzerUseCache     | Sets whether the Node Audit Analyzer will cache results. Cached results expire after 24 hours.             | true
+nodeAuditSkipDevDependencies  | Sets whether the Node Audit Analyzer will skip devDependencies.                                            | false
 retireJsAnalyzerEnabled       | Sets whether the RetireJS Analyzer should be used.                                                         | true
+retirejsForceupdate           | Sets whether the RetireJS Analyzer should update regardless of the `autoupdate` setting.                   | false
 retireJsUrl                   | The URL to the Retire JS repository. **Note** the file name must be `jsrepository.json`.                   | https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json
 nuspecAnalyzerEnabled         | Sets whether the .NET Nuget Nuspec Analyzer will be used.                                                  | true
 nugetconfAnalyzerEnabled      | Sets whether the [experimental](../analyzers/index.html) .NET Nuget packages.config Analyzer will be used. | true
@@ -120,8 +122,8 @@ may be the cveUrl properties, which can be used to host a mirror of the NVD with
 
 Property             | Description                                                                                                          | Default Value                                                       |
 ---------------------|----------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-cveUrlModified       | URL for the modified CVE JSON data feed.  When mirroring the NVD you must mirror the *.json.gz and the *.meta files. | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-modified.json.gz |
-cveUrlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                                  | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-%d.json.gz       |
+cveUrlModified       | URL for the modified CVE JSON data feed.  When mirroring the NVD you must mirror the *.json.gz and the *.meta files. | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.json.gz |
+cveUrlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                                  | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-%d.json.gz       |
 connectionTimeout    | Sets the URL Connection Timeout used when downloading external data.                                                 | &nbsp;                                                              |
 dataDirectory        | Sets the data directory to hold SQL CVEs contents. This should generally not be changed.                             | ~/.m2/repository/org/owasp/dependency-check-data/                   |
 databaseDriverName   | The name of the database driver. Example: org.h2.Driver.                                                             | &nbsp;                                                              |

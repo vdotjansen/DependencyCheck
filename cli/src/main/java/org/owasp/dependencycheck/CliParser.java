@@ -457,12 +457,12 @@ public final class CliParser {
         final Option disableOssIndexAnalyzer = Option.builder().longOpt(ARGUMENT.DISABLE_OSSINDEX)
                 .desc("Disable the Sonatype OSS Index Analyzer.").build();
         final Option ossIndexUsername = Option.builder().argName("username").hasArg().longOpt(ARGUMENT.OSSINDEX_USERNAME)
-                                           .desc("The username to authenticate to Sonatype's OSS Index. "
-                                                 + "If not set the Sonatype OSS Index Analyzer will use an unauthenticated "
-                                                 + "connection.").build();
+                .desc("The username to authenticate to Sonatype's OSS Index. "
+                        + "If not set the Sonatype OSS Index Analyzer will use an unauthenticated "
+                        + "connection.").build();
         final Option ossIndexPassword = Option.builder().argName("password").hasArg().longOpt(ARGUMENT.OSSINDEX_PASSWORD)
-                                           .desc("The password to authenticate to Sonatype's OSS Index. "
-                                                 + "If not set the Sonatype OSS Index Analyzer will use an unauthenticated connection.").build();
+                .desc("The password to authenticate to Sonatype's OSS Index. "
+                        + "If not set the Sonatype OSS Index Analyzer will use an unauthenticated connection.").build();
         final Option disableGolangPackageAnalyzer = Option.builder().longOpt(ARGUMENT.DISABLE_GO_DEP)
                 .desc("Disable the Golang Package Analyzer.")
                 .build();
@@ -531,8 +531,12 @@ public final class CliParser {
                         .desc("Disable the Node Audit Analyzer.").build())
                 .addOption(Option.builder().longOpt(ARGUMENT.DISABLE_NODE_AUDIT_CACHE)
                         .desc("Disallow the Node Audit Analyzer from caching results").build())
+                .addOption(Option.builder().longOpt(ARGUMENT.DISABLE_NODE_AUDIT_SKIPDEV)
+                    .desc("Configures the Node Audit Analyzer to skip devDependencies").build())
                 .addOption(Option.builder().longOpt(ARGUMENT.DISABLE_RETIRE_JS)
                         .desc("Disable the RetireJS Analyzer.").build())
+                .addOption(Option.builder().longOpt(ARGUMENT.RETIRE_JS_FORCEUPDATE)
+                        .desc("Force the RetireJS Analyzer to update even if autoupdate is disabled").build())
                 .addOption(Option.builder().longOpt(ARGUMENT.RETIREJS_URL)
                         .desc("The Retire JS Respository URL")
                         .argName("url").hasArg(true).build())
@@ -902,6 +906,15 @@ public final class CliParser {
     }
 
     /**
+     * Returns whether or not the nodeAuditSkipDevDependencies was specified.
+     *
+     * @return whether or not the nodeAuditSkipDevDependencies was specified
+     */
+    public boolean isNodeAuditSkipDevDependencies() {
+        return hasArgument(ARGUMENT.DISABLE_NODE_AUDIT_SKIPDEV);
+    }
+
+    /**
      * Returns true if the disableRetireJS command line argument was specified.
      *
      * @return true if the disableRetireJS command line argument was specified;
@@ -909,6 +922,17 @@ public final class CliParser {
      */
     public boolean isRetireJSDisabled() {
         return hasDisableOption(ARGUMENT.DISABLE_RETIRE_JS, Settings.KEYS.ANALYZER_RETIREJS_ENABLED);
+    }
+
+    /**
+     * Returns true if the retireJsForceUpdate command line argument was
+     * specified.
+     *
+     * @return true if the retireJsForceUpdate command line argument was
+     * specified; otherwise false
+     */
+    public boolean isRetireJSForceUpdate() {
+        return hasArgument(ARGUMENT.RETIRE_JS_FORCEUPDATE);
     }
 
     /**
@@ -1792,9 +1816,18 @@ public final class CliParser {
          */
         public static final String DISABLE_NODE_AUDIT_CACHE = "disableNodeAuditCache";
         /**
+         * Configures the Node Audit Analyzer to skip the dev dependencies.
+         */
+        public static final String DISABLE_NODE_AUDIT_SKIPDEV = "nodeAuditSkipDevDependencies";
+        /**
          * Disables the RetireJS Analyzer.
          */
         public static final String DISABLE_RETIRE_JS = "disableRetireJS";
+        /**
+         * Whether the RetireJS Analyzer will update regardless of the
+         * `autoupdate` setting.
+         */
+        public static final String RETIRE_JS_FORCEUPDATE = "retireJsForceUpdate";
         /**
          * The URL to the retire JS repository.
          */

@@ -291,7 +291,7 @@
             <evidence type="product" source="hint analyzer" name="product" value="web services" confidence="MEDIUM"/>
         </add>
     </hint>
-        <hint>
+    <hint>
         <given>
             <evidence regex="true" type="product" source="pom" name="artifactid" value="^.*[\.-]ws([\.-].*)?$"/>
         </given>
@@ -300,4 +300,28 @@
             <evidence type="product" source="hint analyzer" name="product" value="web services" confidence="MEDIUM"/>
         </add>
     </hint>
+    <hint>
+        <given>
+            <evidence type="vendor" source="pom" name="groupid" value="zeroturnaround"/>
+        </given>
+        <add>
+            <evidence type="vendor" source="hint analyzer" name="vendor" value="jrebel" confidence="HIGHEST"/>
+        </add>
+    </hint>
+    <hint>
+        <given>
+            <evidence type="vendor" source="Manifest" name="Implementation-Vendor" value="JBoss by Red Hat"/>
+        </given>
+        <add>
+            <evidence type="vendor" source="hint analyzer" name="vendor" value="redhat" confidence="HIGHEST"/>
+        </add>
+    </hint>
+    <hint>
+        <given>
+            <evidence type="vendor" source="pom" name="groupid" value="datomic"/>
+        </given>
+        <add>
+            <evidence type="vendor" source="hint analyzer" name="vendor" value="cognitect" confidence="HIGHEST"/>
+        </add>
+    </hint>   
 </hints>

@@ -58,13 +58,15 @@ public class CweSet implements Serializable {
      * @param cwe new CWE to add
      */
     public void addCwe(String cwe) {
-        this.cwes.add(cwe);
+        if (cwe != null) {
+            this.cwes.add(cwe);
+        }
     }
 
     @Override
     public String toString() {
         if (cwes.isEmpty()) {
-            return null;
+            return "";
         }
         return cwes.stream().map(cwe -> CweDB.getFullName(cwe)).collect(Collectors.joining(", "));
     }
@@ -89,5 +91,16 @@ public class CweSet implements Serializable {
             map.put(cwe, CweDB.getName(cwe));
         });
         return map;
+    }
+
+    /**
+     * Returns <code>true</code> if there are no CWEs; otherwise
+     * <code>false</code>.
+     *
+     * @return  <code>true</code> if there are no CWEs; otherwise
+     * <code>false</code>
+     */
+    public boolean isEmpty() {
+        return cwes.isEmpty();
     }
 }

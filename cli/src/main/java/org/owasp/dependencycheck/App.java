@@ -46,6 +46,7 @@ import ch.qos.logback.classic.filter.ThresholdFilter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
+import org.owasp.dependencycheck.utils.SeverityUtil;
 
 /**
  * The command line interface for the DependencyCheck application.
@@ -151,6 +152,7 @@ public class App {
         } else if (cli.isUpdateOnly()) {
             try {
                 populateSettings(cli);
+                settings.setBoolean(Settings.KEYS.AUTO_UPDATE, true);
             } catch (InvalidSettingException ex) {
                 LOGGER.error(ex.getMessage());
                 LOGGER.debug(ERROR_LOADING_PROPERTIES_FILE, ex);
@@ -181,7 +183,7 @@ public class App {
                 final String[] scanFiles = cli.getScanFiles();
                 if (scanFiles != null) {
                     exitCode = runScan(cli.getReportDirectory(), cli.getReportFormat(), cli.getProjectName(), scanFiles,
-                    cli.getExcludeList(), cli.getSymLinkDepth(), cli.getFailOnCVSS());
+                            cli.getExcludeList(), cli.getSymLinkDepth(), cli.getFailOnCVSS());
                 } else {
                     LOGGER.error("No scan files configured");
                 }
@@ -295,8 +297,9 @@ public class App {
             if (!dep.getVulnerabilities().isEmpty()) {
                 for (Vulnerability vuln : dep.getVulnerabilities()) {
                     LOGGER.debug("VULNERABILITY FOUND {}", dep.getDisplayFileName());
-                    if ((vuln.getCvssV2() != null && vuln.getCvssV2().getScore() > cvssFailScore)
-                            || (vuln.getCvssV3() != null && vuln.getCvssV3().getBaseScore() > cvssFailScore)) {
+                    if ((vuln.getCvssV2() != null && vuln.getCvssV2().getScore() >= cvssFailScore)
+                            || (vuln.getCvssV3() != null && vuln.getCvssV3().getBaseScore() >= cvssFailScore)
+                            || (vuln.getUnscoredSeverity() != null && SeverityUtil.estimateCvssV2(vuln.getUnscoredSeverity()) >= cvssFailScore)) {
                         retCode = 1;
                     }
                 }
@@ -479,9 +482,11 @@ public class App {
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_PACKAGE_ENABLED, !cli.isNodeJsDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_ENABLED, !cli.isNodeAuditDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_USE_CACHE, !cli.isNodeAuditCacheDisabled());
+        settings.setBoolean(Settings.KEYS.ANALYZER_NODE_AUDIT_SKIPDEV, cli.isNodeAuditSkipDevDependencies());
         settings.setBoolean(Settings.KEYS.ANALYZER_RETIREJS_ENABLED, !cli.isRetireJSDisabled());
         settings.setBooleanIfNotNull(Settings.KEYS.PRETTY_PRINT, cli.isPrettyPrint());
         settings.setStringIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_REPO_JS_URL, cli.getRetireJSUrl());
+        settings.setBooleanIfNotNull(Settings.KEYS.ANALYZER_RETIREJS_FORCEUPDATE, cli.isRetireJSForceUpdate());
         settings.setBoolean(Settings.KEYS.ANALYZER_SWIFT_PACKAGE_MANAGER_ENABLED, !cli.isSwiftPackageAnalyzerDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_COCOAPODS_ENABLED, !cli.isCocoapodsAnalyzerDisabled());
         settings.setBoolean(Settings.KEYS.ANALYZER_RUBY_GEMSPEC_ENABLED, !cli.isRubyGemspecDisabled());

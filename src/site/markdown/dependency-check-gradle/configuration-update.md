@@ -39,12 +39,13 @@ dependencyCheck {
 
 ### Proxy Configuration
 
-Config Group | Property          | Description                        | Default Value
--------------|-------------------|------------------------------------|------------------
-proxy        | server            | The proxy server.                  | &nbsp;
-proxy        | port              | The proxy port.                    | &nbsp;
-proxy        | username          | Defines the proxy user name.       | &nbsp;
-proxy        | password          | Defines the proxy password.        | &nbsp;
+Config Group | Property          | Description                                | Default Value
+-------------|-------------------|--------------------------------------------|------------------
+proxy        | server            | The proxy server; see the [proxy configuration](../data/proxy.html) page for more information. | &nbsp;
+proxy        | port              | The proxy port.                            | &nbsp;
+proxy        | username          | Defines the proxy user name.               | &nbsp;
+proxy        | password          | Defines the proxy password.                | &nbsp;
+proxy        | nonProxyHosts     | The list of hosts that do not use a proxy. | &nbsp;
 
 #### Example
 ```groovy
@@ -64,8 +65,8 @@ Note, if ANY of the cve configuration group are set - they should all be set to 
 
 Config Group | Property          | Description                                                                                                  | Default Value                                                       |
 -------------|-------------------|--------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------|
-cve          | urlModified       | URL for the modified CVE JSON data feed.                                                                     | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-modified.json.gz |
-cve          | urlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                          | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-%d.json.gz       |
+cve          | urlModified       | URL for the modified CVE JSON data feed.                                                                     | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.json.gz |
+cve          | urlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                          | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-%d.json.gz       |
 data         | directory         | Sets the data directory to hold SQL CVEs contents. This should generally not be changed.                     | &nbsp;                                                              |
 data         | driver            | The name of the database driver. Example: org.h2.Driver.                                                     | &nbsp;                                                              |
 data         | driverPath        | The path to the database driver JAR file; only used if the driver is not in the class path.                  | &nbsp;                                                              |

@@ -56,12 +56,13 @@ dependencyCheck {
 
 ### Proxy Configuration
 
-Config Group | Property          | Description                        | Default Value
--------------|-------------------|------------------------------------|------------------
+Config Group | Property          | Description                                | Default Value
+-------------|-------------------|--------------------------------------------|------------------
 proxy        | server            | The proxy server; see the [proxy configuration](../data/proxy.html) page for more information. | &nbsp;
-proxy        | port              | The proxy port.                    | &nbsp;
-proxy        | username          | Defines the proxy user name.       | &nbsp;
-proxy        | password          | Defines the proxy password.        | &nbsp;
+proxy        | port              | The proxy port.                            | &nbsp;
+proxy        | username          | Defines the proxy user name.               | &nbsp;
+proxy        | password          | Defines the proxy password.                | &nbsp;
+proxy        | nonProxyHosts     | The list of hosts that do not use a proxy. | &nbsp;
 
 #### Example
 ```groovy
@@ -81,8 +82,8 @@ NVD you must mirror the *.json.gz and the *.meta files. Note, if ANY of the cve 
 
 Config Group | Property          | Description                                                                                                          | Default Value
 -------------|-------------------|----------------------------------------------------------------------------------------------------------------------|------------------
-cve          | urlModified       | URL for the modified CVE JSON data feed. When mirroring the NVD you must mirror the *.json.gz and the *.meta files.  | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-modified.json.gz |
-cve          | urlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                                  | https://nvd.nist.gov/feeds/json/cve/1.0/nvdcve-1.0-%d.json.gz       |
+cve          | urlModified       | URL for the modified CVE JSON data feed. When mirroring the NVD you must mirror the *.json.gz and the *.meta files.  | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-modified.json.gz |
+cve          | urlBase           | Base URL for each year's CVE JSON data feed, the %d will be replaced with the year.                                  | https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-%d.json.gz       |
 data         | directory         | Sets the data directory to hold SQL CVEs contents. This should generally not be changed.                             | &nbsp;                                                              |
 data         | driver            | The name of the database driver. Example: org.h2.Driver.                                                             | &nbsp;                                                              |
 data         | driverPath        | The path to the database driver JAR file; only used if the driver is not in the class path.                          | &nbsp;                                                              |
@@ -113,7 +114,6 @@ analyzers    | archiveEnabled        | Sets whether the Archive Analyzer will be
 analyzers    | zipExtensions         | A comma-separated list of additional file extensions to be treated like a ZIP file, the contents will be extracted and analyzed. | &nbsp;
 analyzers    | jarEnabled            | Sets whether Jar Analyzer will be used.                                                                           | true
 analyzers    | centralEnabled        | Sets whether Central Analyzer will be used. If this analyzer is being disabled there is a good chance you also want to disable the Nexus Analyzer (see below). | true
-analyzers    | ossIndexEnabled       | Sets whether the OSS Index Analyzer will be enabled.                                                              | true
 analyzers    | nexusEnabled          | Sets whether Nexus Analyzer will be used (requires Nexus Pro). This analyzer is superceded by the Central Analyzer; however, you can configure this to run against a Nexus Pro installation. | true
 analyzers    | nexusUrl              | Defines the Nexus Server's web service end point (example http://domain.enterprise/service/local/). If not set the Nexus Analyzer will be disabled. | &nbsp;
 analyzers    | nexusUsesProxy        | Whether or not the defined proxy should be used when connecting to Nexus.                                         | true
@@ -129,7 +129,7 @@ analyzers    | cmakeEnabled          | Sets whether or not the [experimental](..
 analyzers    | autoconfEnabled       | Sets whether or not the [experimental](../analyzers/index.html) autoconf Analyzer should be used.                 | true
 analyzers    | composerEnabled       | Sets whether or not the [experimental](../analyzers/index.html) PHP Composer Lock File Analyzer should be used.   | true
 analyzers    | nodeEnabled           | Sets whether or not the Node.js Analyzer should be used.                                                          | true
-analyzers    | nodeAuditEnabled      | Sets whether the Node Audit Analyzer should be used.                                                              | true
+analyzers    | nodeAuditEnabled      | Sets whether the Node Audit Analyzer should be used. This analyzer requires an internet connection.               | true
 analyzers    | cocoapodsEnabled      | Sets whether or not the [experimental](../analyzers/index.html) Cocoapods Analyzer should be used.                | true
 analyzers    | swiftEnabled          | Sets whether or not the [experimental](../analyzers/index.html) Swift Package Manager Analyzer should be used.    | true
 analyzers    | bundleAuditEnabled    | Sets whether or not the [experimental](../analyzers/index.html) Ruby Bundle Audit Analyzer should be used.        | true
@@ -150,11 +150,15 @@ artifactory  | parallelAnalysis      | Whether the Artifactory analyzer should b
 artifactory  | username              | The user name (only used with API token) to connect to Artifactory instance.                                      | &nbsp;
 artifactory  | apiToken              | The API token to connect to Artifactory instance, only used if the username or the API key are not defined by artifactoryAnalyzerServerId,artifactoryAnalyzerUsername or artifactoryAnalyzerApiToken | &nbsp;
 artifactory  | bearerToken           | The bearer token to connect to Artifactory instance                                                               | &nbsp;
-retirejs     | enabled               | Sets whether the RetireJS Analyzer should be used.                        | true
-retirejs     | retireJsUrl           | The URL to the Retire JS repository. **Note** the file name must be `jsrepository.json`.                          | https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json
+nodeAudit    | enabled               | Sets whether the Node Audit Analyzer should be used. This analyzer requires an internet connection.               | true
+nodeAudit    | useCache              | Sets whether the Node Audit Analyzer should cache results locally.                                                | true
+nodeAudit    | skipDevDependencies   | Sets whether the Node Audit Analyzer should skip devDependencies.                                                 | false
+retirejs     | enabled               | Sets whether the RetireJS Analyzer should be used.                                                                | true
+retirejs     | forceupdate           | Sets whether the RetireJS Analyzer should update regardless of the `autoupdate` setting.                          | false
+retirejs     | retireJsUrl           | The URL to the Retire JS repository.                                                                              | https://raw.githubusercontent.com/Retirejs/retire.js/master/repository/jsrepository.json
 retirejs     | filterNonVulnerable   | Configures the RetireJS Analyzer to remove non-vulnerable JS dependencies from the report.                        | false
 retirejs     | filters               | Configures the list of regular expessions used to filter JS files based on content.                               | &nbsp;
-ossIndex     | enabled               | Sets whether Sonatype's OSS Index will be used.                                                                   | true
+ossIndex     | enabled               | Sets whether Sonatype's [OSS Index Analyzer](../analyzers/oss-index-analyzer.html) will be used. This analyzer requires an internet connection.                                                                  | true
 ossIndex     | username              | The optional user name to connect to Sonatype's OSS Index.                                                        | &nbsp;
 ossIndex     | password              | The optional passwod or API token to connect to Sonatype's OSS Index,                                             | &nbsp;
 
